@@ -27,12 +27,7 @@ namespace Escritorio
 
             iniciaRuta();
 
-            if (File.Exists("recientes.txt"))
-                todos = true;
-            else
-                todos = false;
-            
-            ultima = eligeImagen(todos);
+            ultima = eligeImagen(File.Exists("recientes.txt"));
             cambiaFondo(ultima);
             anade();
 
@@ -50,6 +45,7 @@ namespace Escritorio
         private String eligeImagen(bool recientes)
         {
             List<string> yapuestos;
+            List<string> elegibles = new List<String>();
             Random aleatorio = new Random();
             string[] files;
             int elegido = 1;
@@ -65,26 +61,24 @@ namespace Escritorio
                     // Obtener todos los archivos del directorio
                     files = Directory.GetFiles(ruta);
                     List<string> archivos = new List<string>(files);
-                    foreach (string file in files)
-                    {
-                        foreach (String iter in yapuestos)
-                        {
-                            String nombreArchivo = file.Substring(ruta.Length +1, file.Length - ruta.Length -1);
-                            if (iter.Equals(nombreArchivo))
-                                archivos.Remove(ruta + "\\" + iter);
 
-                        }
+                    foreach (string file in archivos)
+                    {
+                        String nombreArchivo = file.Substring(ruta.Length + 1, file.Length - ruta.Length - 1);
+
+                        if (!comprueba(nombreArchivo, yapuestos))
+                            elegibles.Add(file);
+
                     }
 
-
-                    if (archivos.Count > 1)
+                    if (elegibles.Count > 1)
                     {
-                        elegido = aleatorio.Next(0, archivos.Count - 1);
+                        elegido = aleatorio.Next(0, elegibles.Count - 1);
                         nombre = Path.GetFileName(archivos[elegido]);
                     }
                     else
                     {
-                        nombre = Path.GetFileName(archivos[0]);
+                        nombre = Path.GetFileName(elegibles[0]);
                         borra = true;
                     }
                 }
@@ -100,6 +94,16 @@ namespace Escritorio
             }
 
             return nombre;
+        }
+
+        private bool comprueba(string nombreArchivo, List<string> yapuestos)
+        {
+            foreach (string puesto in yapuestos)
+            {
+                if (nombreArchivo.Equals(puesto))
+                    return true;
+            }
+            return false;
         }
 
         private void button1_Click(object sender, EventArgs e)
