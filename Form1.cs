@@ -66,6 +66,9 @@ namespace Escritorio
                     {
                         String nombreArchivo = file.Substring(ruta.Length + 1, file.Length - ruta.Length - 1);
 
+                        if (nombreArchivo.Contains("kame"))
+                            Console.WriteLine();
+
                         if (!comprueba(nombreArchivo, yapuestos))
                             elegibles.Add(file);
 
@@ -74,11 +77,12 @@ namespace Escritorio
                     if (elegibles.Count > 1)
                     {
                         elegido = aleatorio.Next(0, elegibles.Count - 1);
-                        nombre = Path.GetFileName(archivos[elegido]);
+                        nombre = Path.GetFileName(elegibles[elegido]);
                     }
                     else
                     {
-                        nombre = Path.GetFileName(elegibles[0]);
+                        elegido = aleatorio.Next(0, archivos.Count - 1);
+                        nombre = Path.GetFileName(archivos[elegido]);
                         borra = true;
                     }
                 }
@@ -141,13 +145,7 @@ namespace Escritorio
             if (!borra)
                 File.AppendAllText("recientes.txt", ultima + Environment.NewLine);
             else
-            {
-                FileStream fichero = new FileStream("recientes.txt", FileMode.OpenOrCreate, FileAccess.Write);
-                StreamWriter fs = new StreamWriter(fichero);
-
-                fs.Close();
-                fichero.Close();
-            }
+                File.WriteAllText("recientes.txt", string.Empty);
         }
     }
 }
